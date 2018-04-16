@@ -1,0 +1,370 @@
+********** GET TEXT FILE **********
+<body>
+  <button id="button">Get Text File</button>
+  <br><br>
+  <div id="text"></div>
+
+  <script>
+    // Create event listener
+    document.getElementById('button').addEventListener('click', loadText);
+
+    function loadText(){
+      // Create XHR Object
+      var xhr = new XMLHttpRequest();
+      // OPEN - type, url/file, async
+      xhr.open('GET', 'sample2.txt', true);
+
+      console.log('READYSTATE: ', xhr.readyState);
+
+      // OPTIONAL - used for loaders
+      xhr.onprogress = function(){
+        console.log('READYSTATE: ', xhr.readyState);
+      }
+
+      xhr.onload = function(){
+        console.log('READYSTATE: ', xhr.readyState);
+        if(this.status == 200){
+          //console.log(this.responseText);
+          document.getElementById('text').innerHTML = this.responseText;
+        } else if(this.status = 404){
+          document.getElementById('text').innerHTML = 'Not Found';
+        }
+      }
+
+      xhr.onerror = function(){
+        console.log('Request Error...');
+      }
+
+      // xhr.onreadystatechange = function(){
+      //   console.log('READYSTATE: ', xhr.readyState);
+      //   if(this.readyState == 4 && this.status == 200){
+      //     //console.log(this.responseText);
+      //   }
+      // }
+
+      // Sends request
+      xhr.send();
+    }
+
+    // readyState Values
+    // 0: request not initialized 
+    // 1: server connection established
+    // 2: request received 
+    // 3: processing request 
+    // 4: request finished and response is ready
+
+    // HTTP Statuses
+    // 200: "OK"
+    // 403: "Forbidden"
+    // 404: "Not Found"
+  </script>
+</body>
+********** ********** ********** ********** **********
+
+
+
+
+********** GET JSON **********
+<body>
+  <button id="button1">Get User</button>
+  <button id="button2">Get Users</button>
+  <br><br>
+  <h1>User</h1>  
+  <div id="user"></div>
+  <h1>Users</h1>  
+  <div id="users"></div>
+
+  <script>
+    document.getElementById('button1').addEventListener('click', loadUser);
+    document.getElementById('button2').addEventListener('click', loadUsers);
+
+    function loadUser(){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'user.json', true);
+
+      xhr.onload = function(){
+        if(this.status == 200){
+          var user = JSON.parse(this.responseText);
+          
+          var output = '';
+
+          output += '<ul>' +
+            '<li>ID: '+user.id+'</li>' +
+            '<li>Name: '+user.name+'</li>' +
+            '<li>Email: '+user.email+'</li>' +
+            '</ul>';
+
+          document.getElementById('user').innerHTML = output;
+        }
+      }
+
+      xhr.send();
+    }
+
+    function loadUsers(){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'users.json', true);
+
+      xhr.onload = function(){
+        if(this.status == 200){
+          var users = JSON.parse(this.responseText);
+          
+          var output = '';
+          
+          for(var i in users){
+            output += '<ul>' +
+              '<li>ID: '+users[i].id+'</li>' +
+              '<li>Name: '+users[i].name+'</li>' +
+              '<li>Email: '+users[i].email+'</li>' +
+              '</ul>';
+          }
+
+          document.getElementById('users').innerHTML = output;
+        }
+      }
+
+      xhr.send();
+    }
+  </script>
+</body>
+********** ********** ********** ********** **********
+
+
+
+
+********** EXTERNAL API **********
+<body>
+  <button id="button">Load GitHub Users</button>
+  <br><br>
+  <h1>Github Users</h1>
+  <div id="users"></div>
+
+  <script>
+    document.getElementById('button').addEventListener('click', loadUsers);
+
+    // Load Github Users
+    function loadUsers(){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://api.github.com/users', true);
+
+      xhr.onload = function(){
+        if(this.status == 200){
+          var users = JSON.parse(this.responseText);
+
+          var output = '';
+          for(var i in users){
+            output +=
+              '<div class="user">' +
+              '<img src="'+users[i].avatar_url+'" width="70" height="70">' +
+              '<ul>' +
+              '<li>ID: '+users[i].id+'</li>' +
+              '<li>Login: '+users[i].login+'</li>' +
+              '</ul>' +
+              '</div>';
+          }
+
+          document.getElementById('users').innerHTML = output;
+        }
+      }
+
+      xhr.send();
+    }
+  </script>
+</body>
+********** ********** ********** ********** **********
+
+
+
+
+********** AJAX & PHP FORMS **********
+<body>
+  <button id="button">Get Name</button>
+  <hr>
+  <h1>GET FORM</h1>
+  <form method="GET" action="process.php">
+    <input type="text" name="name">
+    <input type="submit" value="Submit">
+  </form>
+
+  <h1>AJAX GET FORM</h1>
+  <form id="getForm">
+    <input type="text" name="name" id="name1">
+    <input type="submit" value="Submit">
+  </form>
+
+  <h1>POST FORM</h1>
+  <form method="POST" action="process.php">
+    <input type="text" name="name">
+    <input type="submit" value="Submit">
+  </form>
+
+  <h1>AJAX POST FORM</h1>
+  <form id="postForm">
+    <input type="text" name="name" id="name2">
+    <input type="submit" value="Submit">
+  </form>
+
+  <script>
+    document.getElementById('button').addEventListener('click', getName);
+    document.getElementById('getForm').addEventListener('submit', getName);
+    document.getElementById('postForm').addEventListener('submit', postName);
+
+    function getName(e){
+      e.preventDefault();
+
+      var name = document.getElementById('name1').value;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'process.php?name='+name, true);
+
+      xhr.onload = function(){
+        console.log(this.responseText);
+      }
+
+      xhr.send();
+    }
+
+
+    function postName(e){
+      e.preventDefault();
+
+      var name = document.getElementById('name2').value;
+      var params = "name="+name;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'process.php', true);
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+      xhr.onload = function(){
+        console.log(this.responseText);
+      }
+
+      xhr.send(params);
+    }
+  </script>
+</body>
+********** ********** ********** ********** **********
+
+
+
+
+********** FETCH FROM PHP MYSQL **********
+<body>
+  <button id="button">Get Users</button>
+  <br><br>
+  <h1>Users</h1>  
+  <div id="users"></div>
+
+  <script>
+    document.getElementById('button').addEventListener('click', loadUsers);
+
+    function loadUsers(){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'users.php', true);
+
+      xhr.onload = function(){
+        if(this.status == 200){
+          var users = JSON.parse(this.responseText);
+          
+          var output = '';
+          
+          for(var i in users){
+            output += '<ul>' +
+              '<li>ID: '+users[i].id+'</li>' +
+              '<li>Name: '+users[i].name+'</li>' +
+              '</ul>';
+          }
+
+          document.getElementById('users').innerHTML = output;
+        }
+      }
+
+      xhr.send();
+    }
+  </script>
+</body>
+********** ********** ********** ********** **********
+
+
+
+
+********** PROCESS PHP ********** 
+<?php
+
+// Connect to a database
+$conn = mysqli_connect('localhost', 'root', '123456', 'ajaxtest');
+
+echo 'Processing...';
+
+// Check for POST variable
+if(isset($_POST['name'])){
+  $name = mysqli_real_escape_string($conn, $_POST['name']);
+  //echo 'POST: Your name is '. $_POST['name'];
+
+  $query = "INSERT INTO users(name) VALUES('$name')";
+
+  if(mysqli_query($conn, $query)){
+    echo 'User Added...';
+  } else {
+    echo 'ERROR: '. mysqli_error($conn);
+  }
+}
+
+// Check for GET variable
+if(isset($_GET['name'])){
+  echo 'GET: Your name is '. $_GET['name'];
+}
+********** ********** ********** ********** **********
+
+
+
+
+********** USERS PHP ********** 
+<?php 
+// Create Connection
+$conn = mysqli_connect('localhost', 'root', '123456', 'ajaxtest');
+
+$query = 'SELECT * FROM users';
+
+// Get Result
+$result = mysqli_query($conn, $query);
+
+// Fetch Data
+$users = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+echo json_encode($users);
+********** ********** ********** ********** **********
+
+
+
+
+********** USERS JSON **********
+[
+  {
+    "id":1,
+    "name":"Rick",
+    "email":"rick@gmail.com"
+  },
+  {
+    "id":2,
+    "name":"Glenn",
+    "email":"glenn@gmail.com"
+  },
+  {
+    "id":3,
+    "name":"Negan",
+    "email":"negan@gmail.com"
+  }
+]
+********** ********** ********** ********** **********
+
+
+
+
+********** USER JSON **********
+{
+  "id":1,
+  "name":"Rick",
+  "email":"rick@gmail.com"
+}
+********** ********** ********** ********** **********
